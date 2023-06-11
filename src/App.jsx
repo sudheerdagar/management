@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { Employeeform } from './components/employee-form/employee-form.component';
 import { Employees } from './components/view-employees/view-employees.component';
-import { DateComponent } from './components/date-picker/date-picker.component'
-import { AttendanceTable } from './components/employee-attendance/employee-attendance'
-import Navbar from './components/navbar/Navbar'
+import { DateComponent } from './components/date-picker/date-picker.component';
+import { AttendanceTable } from './components/employee-attendance/employee-attendance';
+import Navbar from './components/navbar/Navbar';
 import Footer from './components/footer/Footer';
 import Rating from './components/rating/rating.component';
 
@@ -50,7 +50,7 @@ const App = () => {
 
   return (
     <>
-    <Navbar />
+      <Navbar />
       <div className="flex justify-center mt-8">
         <div className="m-4">
           <button onClick={openEmployeeForm} className="bg-blue-500 text-white px-4 py-2 rounded-md">
@@ -79,7 +79,12 @@ const App = () => {
         onRequestClose={closeEmployeeForm}
         contentLabel="Employee Form"
       >
-        <Employeeform />
+        <>
+          <Employeeform />
+          <button onClick={closeEmployeeForm} className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">
+            Back
+          </button>
+        </>
       </Modal>
 
       <Modal
@@ -87,7 +92,13 @@ const App = () => {
         onRequestClose={closeAttendance}
         contentLabel="Attendance Details"
       >
-        <AttendanceTable />
+        <>
+          <DateComponent />
+          <AttendanceTable />
+          <button onClick={closeAttendance} className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">
+            Back
+          </button>
+        </>
       </Modal>
 
       <Modal
@@ -95,7 +106,12 @@ const App = () => {
         onRequestClose={closeEmployeeList}
         contentLabel="Employee List"
       >
-        <Employees />
+        <>
+          <Employees />
+          <button onClick={closeEmployeeList} className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">
+            Back
+          </button>
+        </>
       </Modal>
 
       <Modal
@@ -103,7 +119,12 @@ const App = () => {
         onRequestClose={closeRating}
         contentLabel="Rating"
       >
-        <Rating />
+        <>
+          <Rating />
+          <button onClick={closeRating} className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4">
+            Back
+          </button>
+        </>
       </Modal>
       <Footer />
     </>
