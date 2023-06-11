@@ -1,6 +1,8 @@
 
 import { initializeApp } from "firebase/app";
-import { getFirestore,doc, setDoc,collection,updateDoc,deleteDoc} from "firebase/firestore";
+import { getFirestore,doc, setDoc,collection,updateDoc,deleteDoc,query,where,getDocs} from "firebase/firestore";
+import { Timestamp} from 'firebase/firestore';
+import dayjs from "dayjs";
 
 // TODO: Replace the following with your app's Firebase project configuration
 // See: https://support.google.com/firebase/answer/7015592
@@ -24,7 +26,7 @@ export const db = getFirestore(app);
 /////DATA HANDLING FOR RISING
 
 export const addEmployee=async (employee)=>{
-    console.log("hioiiiii");
+  
 
   
     const empRef=doc(collection(db,"employees"));
@@ -74,3 +76,73 @@ export const removeEmployee = async (employee) => {
     console.error("Error removing employee:", error);
   }
 };
+
+
+
+
+// Function to create a new attendance record for an employee on a specific date
+export const createAttendanceRecord = async (employeeId, date, data) => {
+  const attendanceCollectionRef = collection(db, 'employees', employeeId, 'Attendance');
+  const attendanceDocumentRef = doc(attendanceCollectionRef);
+
+  const attendanceData = { ...data, date: Timestamp.fromDate(date) };
+  
+  let obj={...attendanceData,id:attendanceDocumentRef.id}
+
+  await setDoc(attendanceDocumentRef, obj);
+};
+
+// Function to update the attendance record for an employee on a specific date
+export const updateAttendanceRecord = async (attendance) => {
+  const {employeeId,attendanceId}=attendance
+  const attendanceDocRef = doc(db, 'employees', employeeId, 'Attendance', attendanceId);
+  await updateDoc(attendanceDocRef,attendance);
+};
+
+// Function to fetch attendance records for all employees on a specific date
+export const fetchAttendanceRecords = async (date) => {
+  const attendanceQuery = query(
+    collection(db, 'employees'),
+    where('Attendance.date', '==', Timestamp.fromDate(date))
+  );
+
+  const attendanceSnapshot = await getDocs(attendanceQuery);
+
+  const attendanceRecords = attendanceSnapshot.docs.map((doc) => {
+    const employeeId = doc.id;
+    const attendanceData = doc.data().Attendance;
+
+    return {
+      employeeId,
+      ...attendanceData,
+    };
+  });
+
+  return attendanceRecords;
+};
+
+
+// Function to check if an attendance record exists for an employee on a specific date
+export const checkAttendanceRecordExists = async (attendance) => {
+  const { employeeId, date } = attendance;
+  const startDate = dayjs(date).startOf('day').toDate();
+  const endDate = dayjs(date).endOf('day').toDate();
+  console.log("startdate==>",startDate);
+  console.log("enddate===>",endDate);
+
+
+  const attendanceCollectionRef = collection(db, 'employees', employeeId, 'Attendance');
+  const attendanceQuery = query(attendanceCollectionRef, where('date', '>=', startDate)&&where('date', '<=', endDate));
+
+  const attendanceSnapshot = await getDocs(attendanceQuery);
+
+  if (attendanceSnapshot.size > 0) {
+    return attendanceSnapshot.docs[0].data();
+  } else {
+    const attendanceDocumentRef = doc(attendanceCollectionRef);
+    const obj = { ...attendance, attendanceId: attendanceDocumentRef.id, date: Timestamp.fromDate(dayjs(date).toDate()) };
+    await setDoc(attendanceDocumentRef, obj);
+    return obj;
+  }
+};
+
