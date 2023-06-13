@@ -124,15 +124,12 @@ export const fetchAttendanceRecords = async (date) => {
 
 // Function to check if an attendance record exists for an employee on a specific date
 export const checkAttendanceRecordExists = async (attendance) => {
-  const { employeeId, date } = attendance;
-  const startDate = dayjs(date).startOf('day').toDate();
-  const endDate = dayjs(date).endOf('day').toDate();
-  console.log("startdate==>",startDate);
-  console.log("enddate===>",endDate);
+  const { employeeId, date,date2 } = attendance;
 
-
+  console.log("default attendance===>",attendance);
+  
   const attendanceCollectionRef = collection(db, 'employees', employeeId, 'Attendance');
-  const attendanceQuery = query(attendanceCollectionRef, where('date', '>=', startDate)&&where('date', '<=', endDate));
+  const attendanceQuery = query(attendanceCollectionRef, where('date2', '==',date2 ));
 
   const attendanceSnapshot = await getDocs(attendanceQuery);
 
@@ -140,7 +137,7 @@ export const checkAttendanceRecordExists = async (attendance) => {
     return attendanceSnapshot.docs[0].data();
   } else {
     const attendanceDocumentRef = doc(attendanceCollectionRef);
-    const obj = { ...attendance, attendanceId: attendanceDocumentRef.id, date: Timestamp.fromDate(dayjs(date).toDate()) };
+    const obj = { ...attendance, attendanceId: attendanceDocumentRef.id, date: Timestamp.fromDate(dayjs(date).toDate())};
     await setDoc(attendanceDocumentRef, obj);
     return obj;
   }

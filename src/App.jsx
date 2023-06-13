@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Modal from 'react-modal';
 import { Employeeform } from './components/employee-form/employee-form.component';
 import { Employees } from './components/view-employees/view-employees.component';

@@ -2,6 +2,8 @@
 import { AttendanceContext } from "../../contexts/attendance-context";
 import { useContext,useState,useEffect} from "react";
 import { checkAttendanceRecordExists,updateAttendanceRecord} from "../../utils/firebase/firebase.utils";
+import dayjs from 'dayjs';
+
 
 
 export  const AttendanceContainer=({employee})=>{
@@ -20,18 +22,19 @@ export  const AttendanceContainer=({employee})=>{
       overtime:null,
       employeeId:employee.id,
       date:selectedDate,
-      attendanceId:null
+      attendanceId:null,
+      date2:dayjs(selectedDate).toDate().toLocaleDateString()
   }
 
   const [editedAttendance,setEditedAttendance]=useState(defaultAttendance);
 
   useEffect(()=>{
     const fetch=async()=>{
-       const result=await checkAttendanceRecordExists(editedAttendance);
+       const result=await checkAttendanceRecordExists(defaultAttendance);
        setEditedAttendance(result);
     }
     fetch();
-  },[])
+  },[selectedDate])
 
  
  
